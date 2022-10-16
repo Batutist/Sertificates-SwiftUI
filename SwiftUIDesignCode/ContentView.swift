@@ -8,24 +8,26 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State var isShow = false
+    @State var isExpand = false
+    @State var isCardShow = false
     @State var viewState = CGSize.zero
+    
     
     var body: some View {
         ZStack {
             TitleView()
-                .blur(radius: isShow ? 20 : 0)
+                .blur(radius: isExpand ? 20 : 0)
                 .animation(.default)
                 
             
             BackCardView()
-                .background(isShow ? Color.themeCard3Color : Color.themeCard4Color)
-                .cornerRadius(20)
+                .background(isExpand ? Color.themeCard3Color : Color.themeCard4Color)
+                .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
                 .shadow(radius: 20)
-                .offset(y: isShow ? -400 : -40)
+                .offset(y: isExpand ? -400 : -40)
                 .offset(x: viewState.width, y: viewState.height)
                 .scaleEffect(0.9)
-                .rotationEffect(.degrees(isShow ? 0 : 10))
+                .rotationEffect(.degrees(isExpand ? 0 : 10))
                 .rotation3DEffect(
                     .degrees(10),
                     axis: (x: 1, y: 0, z: 0.0)
@@ -34,13 +36,13 @@ struct ContentView: View {
                 .animation(.easeOut(duration: 0.5))
             
             BackCardView()
-                .background(isShow ? Color.themeCard4Color : Color.themeCard3Color)
-                .cornerRadius(20)
+                .background(isExpand ? Color.themeCard4Color : Color.themeCard3Color)
+                .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
                 .shadow(radius: 20)
-                .offset(y: isShow ? -200 : -20)
+                .offset(y: isExpand ? -200 : -20)
                 .offset(x: viewState.width, y: viewState.height)
                 .scaleEffect(0.95)
-                .rotationEffect(.degrees(isShow ? 0 : 5))
+                .rotationEffect(.degrees(isExpand ? 0 : 5))
                 .rotation3DEffect(
                     .degrees(5),
                     axis: (x: 1, y: 0, z: 0.0)
@@ -58,25 +60,39 @@ struct ContentView: View {
                     )
                 )
                 .onTapGesture{
-                    isShow.toggle()
+                    isCardShow.toggle()
                 }
                 .gesture(
                     DragGesture()
                         .onChanged { value in
                             viewState = value.translation
-                            isShow = true
+                            isExpand = true
                         }
                         .onEnded { value in
                             viewState = .zero
-                            isShow = false
+                            isExpand = false
                         }
                 )
 
             BottomCardView()
-                .blur(radius: isShow ? 20 : 0)
-                .animation(.default)
+                .offset(x: 0, y: isCardShow ? 360 : 1000)
+                .blur(radius: isExpand ? 20 : 0)
+                .animation(
+                    .timingCurve(
+                        0.2, 0.8, 0.2, 1,
+                        duration: 0.8
+                    )
+                )
             
         }
+    }
+}
+
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+            .previewDevice("iPhone 11 Pro")
+        
     }
 }
 
@@ -110,7 +126,7 @@ struct CardView: View {
         }
         .frame(width: 340, height: 220)
         .background(Color.black)
-        .cornerRadius(20)
+        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         .shadow(radius: 20)
     }
 }
@@ -142,15 +158,6 @@ struct TitleView: View {
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-        
-    }
-}
-
-
-
 struct BottomCardView: View {
     var body: some View {
         VStack(spacing: 20) {
@@ -158,7 +165,7 @@ struct BottomCardView: View {
                 .frame(width: 40, height: 5)
                 .opacity(0.1)
             
-            Text("This certificate is proof that Meng To has achieved the UI Design course with approval from a Design+Code instructor.")
+            Text("This certificate is proof that Sergey Kovalev has achieved the UI Design course with approval from a Design+Code instructor.")
                 .multilineTextAlignment(.center)
                 .font(.subheadline)
                 .lineSpacing(4)
@@ -166,10 +173,9 @@ struct BottomCardView: View {
         }
         .padding(.top, 8)
         .padding(.horizontal, 20)
-        .background(Color.white)
         .frame(maxWidth: .infinity)
-        .cornerRadius(30)
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         .shadow(radius: 20)
-        .offset(x: 0, y: 500)
     }
 }
